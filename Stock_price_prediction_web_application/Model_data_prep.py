@@ -184,7 +184,7 @@ def create_lstm_TA_model(tech_ind_ma_normal, n_past=50, learning_rate=0.0005, ne
     z = Dense(64, activation="sigmoid", name='dense_pooling')(combined)
     z = Dense(1, activation="linear", name='dense_out')(z)
 
-    # our model will accept the inputs of the two branches and then output a single value
+    # the model will accept the inputs of the two branches and then output a single value
     model = Model(inputs=[lstm_branch.input, technical_indicators_branch.input], outputs=z)
 
     adam = optimizers.Adam(learning_rate)
