@@ -1,0 +1,125 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>{{ title }}</h2>
+
+<br>
+
+<style>
+    .form-control {
+        color: black;
+        border-style: outset;
+        height: 40px;
+        width: 250px;
+        text-shadow: none;
+    }
+
+    p.form_questions {
+        font-weight: 700;
+    }
+
+    div #loading {
+        width: 300px;
+        height: 400px;
+        display: none;
+        background: url(../static/content/pic.gif) no-repeat;
+        cursor: wait;
+    }
+
+</style>
+
+<script type="text/javascript">
+    // <![CDATA[
+    function loading() {
+        $("#loading").show();
+        $("#content").hide();
+    }
+    // ]]></script>
+
+
+<div id="loading">
+    <br />
+    <br />
+    <br />
+    <h4>Your model is being trained, please wait...</h4>
+</div>
+
+<div id="content">
+    <h4>Select the parameters to use for training your model:</h4>
+    <form action="/training_interface/model_train" method="POST" id="form">
+        <div class="row">
+            <div class="col-sm-4">
+                <p class="form_questions">Select the technical indicator to use for this model</p>
+            </div>
+            <div class="col-sm-4">
+                <select name="technical_indicator_selected" class="form-control" id="all_classes">
+                    {% for j in technical_indicator %}
+                    <option value="{{ j }}" selected>{{ j }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4">
+                <p class="form_questions">Select the test/train split to use for this model</p>
+            </div>
+            <div class="col-sm-4">
+                <select name="train_test_split_selected" class="form-control" id="all_classes">
+                    {% for k in train_test_split_selection %}
+                    <option value="{{ k }}" selected>{{ k }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4">
+                <p class="form_questions">Select days to use when predicting future values</p>
+            </div>
+            <div class="col-sm-4">
+                <select name="days_to_use_selected" class="form-control" id="all_classes">
+                    {% for l in days_to_use %}
+                    <option value="{{ l }}" selected>{{ l }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4">
+                <p class="form_questions">Select the number of days to predict for</p>
+            </div>
+            <div class="col-sm-4">
+                <select name="days_to_predict_selected" class="form-control" id="all_classes">
+                    {% for m in days_to_predict %}
+                    <option value="{{ m }}" selected>{{ m }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4">
+                <p class="form_questions">Select a stock to train the model with</p>
+            </div>
+            <div class="col-sm-4">
+                <select name="stock_selected" class="form-control" id="all_classes">
+                    {% for i in all_stocks_selection %}
+                    <option value="{{ i }}" selected>{{ i }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+            </div>
+        </div>
+
+        <button class="form-control" id="button" onclick="loading();">Start Training Model</button>
+    </form>
+</div>
+
+    {% endblock %}

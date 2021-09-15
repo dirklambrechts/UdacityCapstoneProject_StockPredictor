@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+<script type="text/javascript">
+    function updateTextInput(val) {
+        document.getElementById('textInput').value = val;
+    }
+</script>
+
+
+<div class="container">
+    <form action="/home" method="POST" id="form">
+        <br />
+        <p>Select the stock prices to view<p>
+
+        <select name="stock_selected_index" class="form-control" id="all_classes">
+            {% for j in stock_selection_list %}
+            <option value="{{ j }}" selected>{{ j }}</option>
+            {% endfor %}
+        </select>
+
+        <p>Select the moving averages to show<p>
+    <input type="checkbox" id="ma_selected_10" name="ma_selected_10" value="True" />
+    <label for="ma_selected_10">10 Day MA</label>
+
+    <input type="checkbox" id="ma_selected_50" name="ma_selected_50" value="True" />
+    <label for="ma_selected_50">50 Day MA</label>
+
+    <input type="checkbox" id="ma_selected_200" name="ma_selected_200" value="True" />
+    <label for="ma_selected_200">200 Day MA</label><br>
+
+    <button class="form-control" id="button">Confirm selections</button>
+
+
+</form>
+
+    {% for id in ids %}
+    <div id="{{id}}"></div>
+    {% endfor %}
+
+</div>
+
+<script type="text/javascript">
+    const graphs = {{graphJSON | safe}};
+    const ids = {{ids | safe}};
+    for(let i in graphs) {
+        Plotly.plot(ids[i], graphs[i].data, graphs[i].layout);
+    }
+</script>
+
+{% endblock %}
+
