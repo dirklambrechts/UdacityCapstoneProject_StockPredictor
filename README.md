@@ -50,7 +50,7 @@ git clone https://github.com/dirklambrechts/UdacityCapstoneProject_StockPredicto
 
 ### Using the web application:
 1. The home page is the stock price analysis page that enables a user to see and analyse the price of a stock along with three different technical indicators to select from. Select the stock you would like to analyse and select the technical indicators you would like to see for the stock selected. 
-![](images/Home_page.png)
+![](Images/Home_page.png)
 2. The training interface page enables a user to select parameters that you would like to use to train a model. By selecting the start training model button a training cycle commences and produces a page to show the results of the model over the training period as well as the predicted stock price for the selected period.
 
 <a name="material"></a>
