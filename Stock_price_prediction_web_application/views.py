@@ -308,7 +308,7 @@ def model_train():
     
     batch_size = 4
     neurons = 50
-    epochs = 5
+    epochs = 50
     learning_rate = 0.0005
 
     if include_ma_model == True:
