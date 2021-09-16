@@ -58,8 +58,8 @@ def update_stock_DB(dbname, stocks_to_use):
     conn = sql.create_engine('sqlite:///Stock_price_prediction_web_application/{}.db'.format(dbname)).connect()
     for name, value in stocks_to_use.items():
         df = pd.read_sql_table(name, con=conn)
-        last_date = datetime.datetime.date(df.Date.max()) + datetime.timedelta(days=1)
-        today_date = datetime.datetime.now()
+        last_date = datetime.datetime.date(df.Date.max())
+        today_date = datetime.datetime.date(datetime.datetime.now())
         if last_date != today_date:
             temp_df_new_sql = data_request_API(value, last_date, today_date, reset_index=False)
             temp_df_new_sql.to_sql(name, conn, index=True, if_exists='append')
@@ -93,13 +93,12 @@ df_dict_all = fetch_DB_data(dbname, stocks_to_use)
 @app.route('/home', methods=['GET', 'POST'])
 def home():
     """Renders the home page."""
-    stock_selection_list = stocks_to_use.keys()
-    
-    #Select the default stock
-    stock = ''
 
-    graph_1 = []
+    #Get the list of stocks
+    stock_selection_list = stocks_to_use.keys()
+
     if request.method == 'POST':
+        graph_1 = []
         stock = request.form.get('stock_selected_index')
         ma_10days = bool(request.form.get('ma_selected_10'))
         ma_50days = bool(request.form.get('ma_selected_50'))
@@ -212,7 +211,38 @@ def home():
                     mode = 'lines',
                     name = "{} Day MA {}".format(days, stock)
                     ))
-   
+    else:
+       graph_1 = []
+
+       #Show the home page with S&P500 as default page
+       stock = 'S&P500'
+       graph_1.append(
+                    Scatter(x = df_dict_all[stock].index,
+                    y = df_dict_all[stock]['Open'].values,
+                    mode = 'lines',
+                    name = "Open Price {}".format(stock)
+                    ))
+
+       graph_1.append(
+                    Scatter(x = df_dict_all[stock].index,
+                    y = df_dict_all[stock]['Open'].rolling(window=10).mean(),
+                    mode = 'lines',
+                    name = "{} Day MA {}".format('10', stock)
+                    ))
+
+       graph_1.append(
+                    Scatter(x = df_dict_all[stock].index,
+                    y = df_dict_all[stock]['Open'].rolling(window=50).mean(),
+                    mode = 'lines',
+                    name = "{} Day MA {}".format('50', stock)
+                    ))
+       graph_1.append(
+                    Scatter(x = df_dict_all[stock].index,
+                    y = df_dict_all[stock]['Open'].rolling(window=200).mean(),
+                    mode = 'lines',
+                    name = "{} Day MA {}".format('200', stock)
+                    ))
+
     layout_1 = dict(title = 'Price of stock {}'.format(stock),
                     xaxis = dict(title = 'Date', autotick=True),
                     yaxis = dict(title = 'Stock price'),
