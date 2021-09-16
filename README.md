@@ -14,23 +14,25 @@
 <a name="descripton"></a>
 ## Description
 
-This is a project for the Udacity Nano degree in data science. The project scope is to create a web application that is able to analyse stock prices as well as predict the future prices a certain stock. 
+This is a capstone project for the Udacity Nano degree in data science. The project scope is to create a web application that is able to analyse stock prices, stock price technical indicators as well as predict the future prices a selected stock. 
 
-The scope of the project includes deploying a web application to analyse a selected stock as well as train a model to produce a predicted stock price for the selected stock. The project consists of four main tasks:
+The main functionality of web application include:
 1. Query an API to retrieve stock price data
 2. Store stock price data in an SQLite database
-3. Pre-process the stock price data in order to train a machine learning model
-4. Build a machine learning model that trains on stock price data to predict future stock prices
-5. Deploy the machine learning model as well as pre-processed data to a web application in order to analyse stock prices
+3. Pre-process the stock price data for visualization using plotly
+4. Pre-process the stock price data in order to train a machine learning model
+5. Build and train a machine learning model with input parameters and publish the results to the web application
+6. View the results of an already trained machine learning model for a specific stock in the web application
 
 <a name="getting_started"></a>
 ## Using the application
 
 <a name="dependencies"></a>
 ### Requirements to run project
-* Python 3.6+
+* Python 3.7+
+* Date manipulation: datetime
 * Data manipulation: Pandas, Numpy
-* Machine Learning Libraries: Keras, Tensor Flow
+* Machine Learning Libraries: Keras, Tensor Flow, SciKit learn
 * Database management: SQLalchemy
 * Web App and Data Visualization: Flask, Plotly
 * Stock data API: yfinance 0.1.63
