@@ -372,5 +372,23 @@ def model_train():
     ids = ["graph-{}".format(j) for j, _ in enumerate(results_figure)]
     graphJSON = json.dumps(results_figure, cls=plotly.utils.PlotlyJSONEncoder)
 
-    return render_template('model_interface.html',title="Trained model results", year=datetime.datetime.now().year, scaled_mse=scaled_mse, ids=ids, graphJSON=graphJSON)
+    return render_template('model_interface.html',title="Trained Model Results", year=datetime.datetime.now().year, scaled_mse=scaled_mse, ids=ids, graphJSON=graphJSON)
+
+@app.route("/pre_trained_model", methods=['GET', 'POST'])
+def pre_trained_model():
+    #Import exisiting model to use
+    model = data_prep.import_model(r"Keras Model")
+
+    #Imported model was trained on microsoft stock data
+    stock = 'Microsoft'
+    data_normal_hist, data_normal_nextday, data_values_nextday, y_normalizer, date_list, data_normal_hist_future, date_list_future, tech_ind_ma_normal, tech_ind_ma_normal_future = data_prep.data_prep_new_lstm(df_dict_all[stock], n_past=50, n_future=5, include_ma=True)
+    data_normal_hist_train, data_normal_nextday_train, data_normal_hist_test, data_normal_nextday_test, data_values_nextday_test, date_list_train, date_list_test, tech_ind_ma_normal_train, tech_ind_ma_normal_test = data_prep.test_train_split(0.9, data_normal_hist, data_values_nextday, data_normal_nextday, date_list, True, tech_ind_ma_normal)
+    data_values_predict_test = y_normalizer.inverse_transform(model.predict([data_normal_hist_test,tech_ind_ma_normal_test]))
+    real_mse = np.mean(np.square(data_values_nextday_test - data_values_predict_test))
+    scaled_mse = real_mse / (np.max(data_values_nextday_test) - np.min(data_values_nextday_test)) * 100
+    print (scaled_mse)
+
+    return render_template('pre_trained_model.html',title="Pre-Trained Model Results", year=datetime.datetime.now().year, scaled_mse=scaled_mse, ids=ids, graphJSON=graphJSON)
+
+
 

@@ -8,7 +8,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'        # 2 = INFO and WARNING messages are not printed
 import tensorflow as tf
 
-from keras.models import Model
+from keras.models import Model, load_model
 from keras.layers import Dense, Dropout, LSTM, Input, Activation, concatenate
 from keras import optimizers
 tf.random.set_seed(4)
@@ -191,3 +191,7 @@ def create_lstm_TA_model(tech_ind_ma_normal, n_past=50, learning_rate=0.0005, ne
 
     model.compile(loss='mean_squared_error', optimizer='adam') 
     return model
+
+def import_model(location):
+     
+    return load_model(location)
