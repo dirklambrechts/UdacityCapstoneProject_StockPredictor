@@ -17,7 +17,7 @@ import numpy as np
 import Stock_price_prediction_web_application.Model_data_prep as data_prep
 
 stocks_to_use = {'Microsoft': 'MSFT', 'Nasdaq': '^IXIC', 'S&P500':'^GSPC'}
-dbname = 'DB_stock_history_data'
+dbname = 'DB_stock_history_data_v1'
 
 def data_request_API(symbol, start_date, end_date, reset_index=True):
     '''
@@ -58,9 +58,9 @@ def update_stock_DB(dbname, stocks_to_use):
     conn = sql.create_engine('sqlite:///Stock_price_prediction_web_application/{}.db'.format(dbname)).connect()
     for name, value in stocks_to_use.items():
         df = pd.read_sql_table(name, con=conn)
-        last_date = datetime.datetime.date(df.Date.max())
+        last_date = datetime.datetime.date(df.Date.max()) + datetime.timedelta(days=1)
         today_date = datetime.datetime.date(datetime.datetime.now())
-        if last_date != today_date:
+        if last_date < today_date:
             temp_df_new_sql = data_request_API(value, last_date, today_date, reset_index=False)
             temp_df_new_sql.to_sql(name, conn, index=True, if_exists='append')
     conn.close()
@@ -384,11 +384,49 @@ def pre_trained_model():
     data_normal_hist, data_normal_nextday, data_values_nextday, y_normalizer, date_list, data_normal_hist_future, date_list_future, tech_ind_ma_normal, tech_ind_ma_normal_future = data_prep.data_prep_new_lstm(df_dict_all[stock], n_past=50, n_future=5, include_ma=True)
     data_normal_hist_train, data_normal_nextday_train, data_normal_hist_test, data_normal_nextday_test, data_values_nextday_test, date_list_train, date_list_test, tech_ind_ma_normal_train, tech_ind_ma_normal_test = data_prep.test_train_split(0.9, data_normal_hist, data_values_nextday, data_normal_nextday, date_list, True, tech_ind_ma_normal)
     data_values_predict_test = y_normalizer.inverse_transform(model.predict([data_normal_hist_test,tech_ind_ma_normal_test]))
+    data_values_predict_future = y_normalizer.inverse_transform(model.predict([data_normal_hist_future,tech_ind_ma_normal_future]))
+    
     real_mse = np.mean(np.square(data_values_nextday_test - data_values_predict_test))
-    scaled_mse = real_mse / (np.max(data_values_nextday_test) - np.min(data_values_nextday_test)) * 100
-    print (scaled_mse)
+    scaled_mse = round(real_mse / (np.max(data_values_nextday_test) - np.min(data_values_nextday_test)) * 100)
 
-    return render_template('pre_trained_model.html',title="Pre-Trained Model Results", year=datetime.datetime.now().year, scaled_mse=scaled_mse, ids=ids, graphJSON=graphJSON)
+    results_plot = []
+    
+    #Add the predicted values over the test period to the plot
+    results_plot.append(
+        Scatter(x = date_list_test,
+        y = data_values_predict_test.ravel(),
+        mode = 'lines',
+        name = "Predicted values on test data"
+        ))
+
+    #Add the future predicted values to plot
+    results_plot.append(
+        Scatter(x = date_list_future,
+        y = data_values_predict_future.ravel(),
+        mode = 'lines',
+        name = "Predicted future values - 5 days ahead"
+        ))
+
+    #Add the actual stock price over the test period for comparison
+    results_plot.append(
+        Scatter(x = date_list_test,
+                y = data_values_nextday_test.ravel(),
+                mode = 'lines',
+                name = 'Actual values over test data period'               
+        ))
+
+    results_layout = dict(title = 'Prediction of stock price for {}'.format(stock),
+                    xaxis = dict(title = 'Date', autotick=True),
+                    yaxis = dict(title = 'Stock price'),
+                    )    
+    results_figure = []    
+    results_figure.append(dict(data=results_plot, layout=results_layout))
+   
+    # encode plotly graphs in JSON
+    ids = ["graph-{}".format(j) for j, _ in enumerate(results_figure)]
+    graphJSON = json.dumps(results_figure, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return render_template('pre_trained_model.html',title="Pre-Trained Model Results Over Test Period", year=datetime.datetime.now().year, scaled_mse=scaled_mse, ids=ids, graphJSON=graphJSON)
 
 
 

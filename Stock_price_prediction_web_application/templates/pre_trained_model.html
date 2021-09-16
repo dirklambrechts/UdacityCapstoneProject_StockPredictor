@@ -1,0 +1,30 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    .b {
+        border: 1px solid blue;
+        background-color: lightblue;
+        padding: 10px;
+    }
+
+</style>
+
+<div class="container">
+    <div class="b">Model mean square error: {{scaled_mse}}%</div>
+    {% for id in ids %}
+    <div id="{{id}}"></div>
+    {% endfor %}
+</div>
+
+<script type="text/javascript">
+    const graphs = {{graphJSON | safe}};
+    const ids = {{ids | safe}};
+    for(let i in graphs) {
+        Plotly.plot(ids[i], graphs[i].data, graphs[i].layout);
+    }
+</script>
+
+{% endblock %}
+
