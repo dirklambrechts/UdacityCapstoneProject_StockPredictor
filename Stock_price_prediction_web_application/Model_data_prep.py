@@ -192,6 +192,3 @@ def create_lstm_TA_model(tech_ind_ma_normal, n_past=50, learning_rate=0.0005, ne
     model.compile(loss='mean_squared_error', optimizer='adam') 
     return model
 
-def import_model(location):
-     
-    return load_model(location)
